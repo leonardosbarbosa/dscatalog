@@ -1,7 +1,7 @@
 package com.devsuperior.dscatalog.services;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,5 +23,12 @@ public class CategoryService {
 		List<Category> categoriesList = repository.findAll();
 		
 		return categoriesList.stream().map(x -> new CategoryDTO(x)).collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	public CategoryDTO findById(Long id) {
+		Optional<Category> opCategory = repository.findById(id);
+		Category entity = opCategory.get();
+		return new CategoryDTO(entity);
 	}
 }
