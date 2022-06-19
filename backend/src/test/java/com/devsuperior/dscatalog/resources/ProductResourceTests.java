@@ -53,6 +53,7 @@ public class ProductResourceTests {
         when(productService.findById(nonExistentId)).thenThrow(ResourceNotFoundException.class);
         when(productService.update(eq(existentId), any(ProductDTO.class))).thenReturn(productDTO);
         when(productService.update(eq(nonExistentId), any(ProductDTO.class))).thenThrow(ResourceNotFoundException.class);
+        when(productService.insert(any(ProductDTO.class))).thenReturn(productDTO);
         doNothing().when(productService).delete(existentId);
         doThrow(ResourceNotFoundException.class).when(productService).delete(nonExistentId);
         doThrow(DatabaseException.class).when(productService).delete(dependentId);
@@ -122,5 +123,18 @@ public class ProductResourceTests {
         ResultActions result = mockMvc.perform(delete("/products/{id}", dependentId)
                 .accept(MediaType.APPLICATION_JSON));
         result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void insertShouldReturnProductDTOAndHttpStatusCreated() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(productDTO);
+        ResultActions result = mockMvc.perform(post("/products")
+                .content(jsonBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+        result.andExpect(status().isCreated());
+        result.andExpect(jsonPath("$.id").exists());
+        result.andExpect(jsonPath("$.name").exists());
+        result.andExpect(jsonPath("$.description").exists());
     }
 }
