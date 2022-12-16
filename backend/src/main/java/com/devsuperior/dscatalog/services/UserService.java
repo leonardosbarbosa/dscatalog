@@ -30,7 +30,7 @@ import java.util.Optional;
 @Service
 public class UserService implements UserDetailsService {
 
-    private static Logger logger = LoggerFactory.getLogger(UserService.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     @Autowired
     private UserRepository repository;
 
@@ -65,7 +65,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public UserDTO update(Long id, UserUpdateDTO dto) {
         try {
-            User entity = repository.getById(id);
+            User entity = repository.getOne(id);
             copyDtoToEntity(dto, entity);
             entity = repository.save(entity);
             return new UserDTO(entity);
@@ -91,7 +91,7 @@ public class UserService implements UserDetailsService {
         entity.setEmail(dto.getEmail());
         entity.getRoles().clear();
         for (RoleDTO roleDto : dto.getRoles()) {
-            Role Role = roleRepository.getById(roleDto.getId());
+            Role Role = roleRepository.getOne(roleDto.getId());
             entity.getRoles().add(Role);
         }
     }
